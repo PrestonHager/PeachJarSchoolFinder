@@ -42,13 +42,15 @@ def search(school):
     driver.close()
     return value
 
-def main(all_schools, start_index=0):
+def main(all_schools, start_index=0, end_index=-1):
     global user_agent
     print("DONE!\nInitializing the User Agents...")
     user_agent = UserAgent(verify_ssl=False)
     print("DONE!\nInterating through schools...")
     # loop through each school and find how many students it has.
-    for s in range(start_index, len(all_schools)):
+    if end_index < 0:
+        end_index = len(all_schools)
+    for s in range(start_index, end_index):
         school = all_schools[s]
         number_of_students = search(school)
         print(f"Found: '{number_of_students}' for school #{s+1}")
@@ -60,13 +62,15 @@ if __name__ == '__main__':
     # get the command arguments.
     arguments = plum.get_args({
         "open_file": ["-o", "--open"],
-        "save_file": ["-s", "--save", "--save-file"],
+        "save_file": ["--save", "--save-file"],
         "start_index": ["-s", "--start"],
+        "end_index": ["-e", "--end"],
         "help": ["-h", "--help"]
     }, defaults={
         "open_file": "schools.json",
         "save_file": "school_data.json",
         "start_index": 1,
+        "end_index": -1,
         "help": False
     })
     # if the help was asked, then provide.
@@ -78,7 +82,7 @@ if __name__ == '__main__':
     with open(arguments["open_file"]) as f_in:
         all_schools = json.load(f_in)
     try:
-        main(all_schools, arguments["start_index"]-1)
+        main(all_schools, arguments["start_index"]-1, arguments["end_index"])
     except KeyboardInterrupt:
         print("Keyboard Intterupt pressed. Stopping...")
     except Exception as err:
