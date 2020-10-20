@@ -7,8 +7,14 @@ from fake_useragent import UserAgent
 import json
 import time
 
-HELP_MESSAGE = """
-"""
+HELP_MESSAGE = """\t\t----- Retriving School Data from Google ------
+\tUsage: python school_data.py [--option value] [-o v]\n
+\t-o --open\tthe file to open and start from.
+\t--save\t\tthe file to save to once finished.
+\t--save-file
+\t-s --start\tstart index for the list of schools in the JSON file.
+\t-e --end\tend index for the list of school.
+\t-h --help\tshow this help message."""
 
 def search(school):
     global user_agent
