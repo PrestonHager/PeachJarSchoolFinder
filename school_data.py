@@ -55,8 +55,9 @@ def main(all_schools, start_index=0):
         school["total_students"] = number_of_students
 
 if __name__ == '__main__':
-    # get the command arguments.
     import plum
+    import traceback
+    # get the command arguments.
     arguments = plum.get_args({
         "open_file": ["-o", "--open"],
         "save_file": ["-s", "--save", "--save-file"],
@@ -78,9 +79,13 @@ if __name__ == '__main__':
         all_schools = json.load(f_in)
     try:
         main(all_schools, arguments["start_index"]-1)
-    except:
+    except KeyboardInterrupt:
+        print("Keyboard Intterupt pressed. Stopping...")
+    except Exception as err:
         # if an error occurs, we don't want to loose our work, so we save!
         print("An error occurred! Saving the current data...")
+        traceback.print_tb(err.__traceback__)
+        print(err)
     # save the schools with the new data.
     with open(arguments["save_file"], 'w') as f_out:
         json.dump(all_schools, f_out)

@@ -18,7 +18,7 @@ class Plum:
                 if arg.startswith("-"):
                     return_values[current_arg] = True
                 else:
-                    if type(arguments[current_arg]) == int:
+                    if type(defaults[current_arg]) == int:
                         try:
                             arg = int(arg)
                         except:
