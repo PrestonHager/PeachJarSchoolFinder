@@ -16,7 +16,15 @@ HELP_MESSAGE = """\t\t----- Retriving School Data from Google ------
 \t-e --end\tend index for the list of school.
 \t-h --help\tshow this help message."""
 
-def search(school):
+def search(school, run=0):
+    try:
+        return _search(school)
+    except:
+        if run > 10:
+            return "N/A"
+        return search(school, run+1)
+
+def _search(school):
     global user_agent
     name = school["name"]
     city = school["city"]
@@ -45,8 +53,23 @@ def search(school):
         value = "N/A"
     else:
         value = ' or '.join([e.text for e in answer_element])
-    driver.close()
+    try:
+        driver.close()
+    except:
+        pass
     return value
+
+def _find_value(possibleValues):
+    for value in possibleValues:
+        try:
+            return int(value)
+        except:
+            try:
+                if " " in value:
+                    return int(value.split(' ')[0])
+            except:
+                pass
+    return "N/A"
 
 def main(all_schools, start_index=0, end_index=-1):
     global user_agent
