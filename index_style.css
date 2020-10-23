@@ -107,6 +107,12 @@ li.grade-option.option.selected i {
 }
 
 /* === Results of Search Styling === */
+
 div.results {
   overflow-y: scroll; /* This doesn't actual work... */
+}
+
+p.information {
+  font-size: 1.2em;
+  font-weight: bold;
 }
