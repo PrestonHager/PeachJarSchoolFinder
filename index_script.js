@@ -102,7 +102,7 @@ function fixDropdownWidth() {
 function getSchools(hardRefresh) {
   schools = JSON.parse(localStorage.getItem('schools'));
   if (schools == null || hardRefresh) {
-    $.getJSON("https://srv-file17.gofile.io/downloadStore/srv-store5/DIY9ls/school_data.json", function(data) {
+    $.getJSON("https://srv-file8.gofile.io/download/K1MVmj/school_data.json", function(data) {
       localStorage.setItem('schools', JSON.stringify(data));
       schools = data;
     });
