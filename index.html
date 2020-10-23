@@ -3,7 +3,68 @@
   <link rel="stylesheet" href="index_style.css">
 </head>
 <body>
+  <div class="box">
+    <div class="main-content">
+      <div class="options">
+        <div class="option">
+          <p class="option-text">Grades:</p>
+          <div class="option-selection-wrapper">
+            <div id="grade-option-selection-current" class="current-selection">
+              <div class="current-selection-text">
+                None
+              </div>
+              <div class="current-selection-text text-right">
+                <i class="fas fa-caret-down fa-sm"></i>
+              </div>
+            </div>
+            <ul id="grade-option-selection" class="option-selection">
+              <li id="pk-k-grade-option" class="grade-option option">
+                <p>
+                  PK-K
+                  <i class="fas fa-check fa-sm grade-selected-icon"></i>
+                </p>
+              </li>
+              <li id="1-5-grade-option" class="grade-option option">
+                <p>
+                  1-5 Grade
+                  <i class="fas fa-check fa-sm grade-selected-icon"></i>
+                </p>
+              </li>
+              <li id="6-8-grade-option" class="grade-option option">
+                <p>
+                  6-8 Grade
+                  <i class="fas fa-check fa-sm grade-selected-icon"></i>
+                </p>
+              </li>
+              <li id="9-12-grade-option" class="grade-option option">
+                <p>
+                  9-12 Grade
+                  <i class="fas fa-check fa-sm grade-selected-icon"></i>
+                </p>
+              </li>
+              <li id="ce-grade-option" class="grade-option option">
+                <p>
+                  CE and GED
+                  <i class="fas fa-check fa-sm grade-selected-icon"></i>
+                </p>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="option">
+          <p class="option-text">Number of Students</p>
+          <input id="student-number-min" type="number" class="option number-option" value=0 min=0>
+          <p class="option-text">-</p>
+          <input id="student-number-max" type="number" class="option number-option" value=2000 min=1>
+        </div>
+      </div>
+      <div class="results">
+        <ul id="schools-list"></ul>
+      </div>
+    </div>
+  </div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script src="index_script.js"></script>
+  <script src="https://kit.fontawesome.com/7f9874946f.js" crossorigin="anonymous"></script>
 </body>
 </html>

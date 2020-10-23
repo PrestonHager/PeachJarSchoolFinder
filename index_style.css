@@ -1,0 +1,112 @@
+/* index_style.css
+   by Preston Hager */
+
+/* === Main Content Styling == */
+
+body {
+  background: linear-gradient(to bottom right, #38BFE7, #245ABF);
+  height: 100%;
+  margin: 0;
+}
+
+div.box {
+  display: flex;
+  flex-flow: column;
+  height: 100%;
+}
+
+div.main-content {
+  background: #CCCAC9;
+  flex: 1 1 auto;
+  margin: 1em;
+  padding: 1em;
+  height: auto;
+  overflow-y: scroll;
+}
+
+/* === Simple Text Styling === */
+
+.text-left {
+  float: left;
+}
+.text-right {
+  float: right;
+}
+
+/* === Options Styling === */
+
+p.option-text {
+  display: inline-block;
+  font-size: 1.2em;
+  margin: 0.5em 0;
+}
+
+div.option {
+  display: inline-block;
+  padding: 0.5em;
+}
+
+/* === Grade Selection Option === */
+
+div#grade-option-selection-current {
+  display: block;
+  background: #38BFE7;
+  min-width: 10em;
+  border: 2px solid #121111;
+  padding: 0.25em;
+}
+div#grade-option-selection-current:hover {
+  background: #1BB1DE;
+}
+div.current-selection-text {
+  display: inline;
+}
+
+div.option-selection-wrapper {
+  display: inline-block;
+  vertical-align: top;
+  transform: translateY(0.5em);
+  cursor: pointer;
+}
+ul.option-selection {
+  display: none;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  background: #38BFE7;
+  border: 2px solid #121111;
+  border-top: 0;
+  position: absolute;
+  /* min-width: 10em; */
+}
+ul.dropdown-shown {
+  display: block;
+}
+
+li.grade-option.option:first-child {
+  border-top: 0;
+}
+li.grade-option.option {
+  margin: 0;
+  padding: 0.25em;
+  border-top: 1px solid #121111;
+}
+li.grade-option.option:hover {
+  background: #1BB1DE;
+}
+
+li.grade-option.option p {
+  margin: 0;
+}
+li.grade-option.option i {
+  display: none;
+  float: right;
+}
+li.grade-option.option.selected i {
+  display: inline-block;
+}
+
+/* === Results of Search Styling === */
+div.results {
+  overflow-y: scroll; /* This doesn't actual work... */
+}
