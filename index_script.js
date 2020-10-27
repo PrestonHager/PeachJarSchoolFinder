@@ -2,12 +2,13 @@
 // by Preston Hager
 
 var schools;
-var selectedSchools = []; // Used to optimize school selection.
+// var selectedSchools = []; // Used to optimize school selection.
 let minStudents = 0;
 let maxStudents = 2000;
 // Variables used in the grade option selection for optimization.
 var showDropdown = false;
 var lastGradesSelected = '{"pkg": false, "elm": false, "mid": false, "high": false, "ce": false}';
+var selectedGrades = [];
 
 // Add a nice animation to the dropdown menu.
 $("div#grade-option-selection-current").click(function(e) {
@@ -19,7 +20,6 @@ $("div#grade-option-selection-current").click(function(e) {
     let selectedGrades = getSelectedGrades();
     if (lastGradesSelected !== JSON.stringify(selectedGrades)) {
       let updateSelectedTotalsPromise = (new Promise(updateSelectedOptions))
-        .then(populateSchools)
         .catch(() => console.log(err));
       lastGradesSelected = JSON.stringify(selectedGrades);
     }
@@ -41,8 +41,8 @@ $("input#student-number-min").change(function(e) {
     $(this).val(parseInt($(this).siblings("input").val()) - 1);
   }
   minStudents = parseInt($(this).val());
+  console.log("min students changed to " + minStudents);
   let updateSelectedTotalsPromise = (new Promise(updateSelectedOptions))
-    .then(populateSchools)
     .catch((err) => console.log(err));
 });
 $("input#student-number-max").change(function(e) {
@@ -51,55 +51,74 @@ $("input#student-number-max").change(function(e) {
   }
   maxStudents = parseInt($(this).val());
   let updateSelectedTotalsPromise = (new Promise(updateSelectedOptions))
-    .then(populateSchools)
     .catch((err) => console.log(err));
 });
 
 function getSelectedGrades() {
+  selectedGrades = [];
   var gradesSelected = {"pkg": false, "elm": false, "mid": false, "high": false, "ce": false};
-  if ($("li#pk-k-grade-option").hasClass("selected"))
+  if ($("li#pk-k-grade-option").hasClass("selected")) {
     gradesSelected.pkg = true;
-  if ($("li#1-5-grade-option").hasClass("selected"))
+    selectedGrades = selectedGrades.concat(["PK", "KG"]);
+  }
+  if ($("li#1-5-grade-option").hasClass("selected")) {
     gradesSelected.elm = true;
-  if ($("li#6-8-grade-option").hasClass("selected"))
+    selectedGrades = selectedGrades.concat(["1", "2", "3", "4", "5"]);
+  }
+  if ($("li#6-8-grade-option").hasClass("selected")) {
     gradesSelected.mid = true;
-  if ($("li#9-12-grade-option").hasClass("selected"))
+    selectedGrades = selectedGrades.concat(["6", "7", "8"]);
+  }
+  if ($("li#9-12-grade-option").hasClass("selected")) {
     gradesSelected.high = true;
-  if ($("li#ce-grade-option").hasClass("selected"))
+    selectedGrades = selectedGrades.concat(["9", "10", "11", "12"]);
+  }
+  if ($("li#ce-grade-option").hasClass("selected")) {
     gradesSelected.ce = true;
-  return gradesSelected
+    selectedGrades = selectedGrades.concat(["CE"]);
+  }
+  return gradesSelected;
 }
 
 // Called when either 'total student' number or grade options have been changed.
 function updateSelectedOptions(resolve, reject) {
   $("p#loading-info").show();
-  setTimeout(resolve, 0, schools);
+  setTimeout(() => resolve(populateSchools(schools)), 0);
 }
-
-// NOTE: isn't used right now.
-/*
-function _updateSelectedOptions(resolve, reject) {
-  $("p#loading-info").show();
-  selectedSchools = schools.filter(function(el) {
-    if (el.total_students == undefined) { return false; }
-    let totalStudents = parseInt(el.total_students.replace(/,/g, ''));
-    return totalStudents > minStudents && totalStudents < maxStudents;
-  });
-  resolve(selectedSchools);
-}
-*/
 
 function populateSchools(selectedSchools) {
-  for (let schoolItem of generateSchoolItems(selectedSchools)) {
-    $("ul#schools-list").append(schoolItem);
+  $("ul#schools-list").empty();
+
+  let iterator = generateSchoolItems(selectedSchools);
+
+  Promise.all(iterator)
+  .then(result => {
+    setTimeout(() => {$("ul#schools-list").append(result)}, 0);
+  })
+  .then(() => {
+    setTimeout(() => {$("p#loading-info").hide()}, 0);
+  });
+}
+
+// create list [1, 2, 3] etc
+// check to see if low is in that list
+// if not, check to see if high is in that list
+// if not, it cannot be returned.
+
+function schoolInGrades(school) {
+  if (selectedGrades.indexOf(school.grade_low) >= 0) {
+    return true;
+  } else if (selectedGrades.indexOf(school.grade_high) >= 0) {
+    return true;
   }
-  $("p#loading-info").hide();
+  return false;
 }
 
 function* generateSchoolItems(localSchools) {
-  $("ul#schools-list").empty();
   for (var i=0; i < localSchools.length; i++) {
     let school = localSchools[i]; // school variable to make it easier for us.
+    // Check to see if the school is within the grade boundries selected.
+    if (!schoolInGrades(school)) continue;
     // check the total number of students.
     if (school.total_students == undefined) continue;
     let totalStudents = parseInt(school.total_students.replace(/,/g, ''));
@@ -113,7 +132,6 @@ function* generateSchoolItems(localSchools) {
       yield schoolItem;
     }
   }
-  $("p#loading-info").hide();
 }
 
 // For some reason the slideToggle animation is
@@ -176,7 +194,6 @@ $(document).ready(function() {
   getSchools()
     .done((schools) => {
       let listUpdatePromise = (new Promise(updateSelectedOptions))
-        .then(populateSchools)
         .catch((err) => console.log(err));
   });
 });
