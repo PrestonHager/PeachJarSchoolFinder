@@ -210,7 +210,7 @@ function getSchools(hardRefresh) {
   var def = $.Deferred();
   schools = JSON.parse(localStorage.getItem('schools'));
   if (schools == null || hardRefresh) {
-    $.getJSON("https://srv-file9.gofile.io/download/OoIzh3/better_school_data.json", function(data) {
+    $.getJSON("https://peachjar-finder.s3-us-west-2.amazonaws.com/schools.json", function(data) {
       localStorage.setItem('schools', JSON.stringify(data));
       schools = data;
       def.resolve(schools);
