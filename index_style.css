@@ -52,7 +52,7 @@ div#grade-option-selection-current {
   display: block;
   background: #38BFE7;
   min-width: 10em;
-  border: 2px solid #121111;
+  border: 2px solid #FF8900;
   padding: 0.25em;
 }
 div#grade-option-selection-current:hover {
@@ -74,7 +74,7 @@ ul.option-selection {
   margin: 0;
   padding: 0;
   background: #38BFE7;
-  border: 2px solid #121111;
+  border: 2px solid #FF8900;
   border-top: 0;
   position: absolute;
   /* min-width: 10em; */
@@ -122,3 +122,25 @@ div#no-results {
 }
 
 /* === School Result Styling === */
+
+ul#schools-list {
+  padding: 0;
+  margin: 1em;
+  list-style-type: none;
+}
+
+div.school-item {
+  background: 1px rgba(56, 191, 231, 0.5);
+  margin: 1em;
+  padding: 0.5em 0.5em;
+  border: 1px solid #FF8900;
+  box-shadow: 2px 2px 1px #aaaaaa;
+}
+
+div.school-item p {
+  margin: 0;
+}
+
+p.padded-bottom {
+  padding-bottom: 0.5em;
+}

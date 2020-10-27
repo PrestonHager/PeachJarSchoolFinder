@@ -186,10 +186,11 @@ function* generateSchoolItems(localSchools) {
     if (totalStudents >= minStudents && totalStudents <= maxStudents) {
       let schoolItem = $("<li></li>")
         .append(
-          $("<div></div>").append(
-            $("<p></p>").text(school.name + " - " + school.city + ", " + school.state),
+          $("<div></div>").addClass("school-item").append(
+            $("<p></p>").addClass("padded-bottom").text(school.name + " - " + school.city + ", " + school.state),
             $("<p></p>").text("Total Students: " + totalStudents)));
       schoolItem.attr("id", "school-item-"+i);
+      schoolItem.addClass("school-item");
       yield schoolItem;
     }
   }
