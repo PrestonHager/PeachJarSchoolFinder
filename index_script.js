@@ -31,6 +31,7 @@ $("div#grade-option-selection-current").click(function(e) {
 // Click on a grade option in the dropdown to select it.
 $("li.grade-option.option").click(function(e) {
   $(this).toggleClass("selected");
+  setSelectedGradesText();
 });
 
 // Minimum and maximum constraints on the total students selections.
@@ -55,33 +56,89 @@ $("input#student-number-max").change(function(e) {
 });
 
 function getSelectedGrades() {
-  selectedGrades = [];
   var gradesSelected = {"pkg": false, "elm": false, "mid": false, "high": false, "ce": false};
   if ($("li#pk-k-grade-option").hasClass("selected")) {
     gradesSelected.pkg = true;
-    selectedGrades = selectedGrades.concat(["PK", "KG"]);
   }
   if ($("li#1-5-grade-option").hasClass("selected")) {
     gradesSelected.elm = true;
-    selectedGrades = selectedGrades.concat(["1", "2", "3", "4", "5"]);
   }
   if ($("li#6-8-grade-option").hasClass("selected")) {
     gradesSelected.mid = true;
-    selectedGrades = selectedGrades.concat(["6", "7", "8"]);
   }
   if ($("li#9-12-grade-option").hasClass("selected")) {
     gradesSelected.high = true;
-    selectedGrades = selectedGrades.concat(["9", "10", "11", "12"]);
   }
   if ($("li#ce-grade-option").hasClass("selected")) {
     gradesSelected.ce = true;
-    selectedGrades = selectedGrades.concat(["CE"]);
   }
   return gradesSelected;
 }
 
+function setSelectedGradesList() {
+  selectedGrades = [];
+  let gradesSelected = getSelectedGrades();
+  if (gradesSelected.pkg)
+    selectedGrades = selectedGrades.concat(["PK", "KG"]);
+  if (gradesSelected.elm)
+    selectedGrades = selectedGrades.concat(["1", "2", "3", "4", "5"]);
+  if (gradesSelected.mid)
+    selectedGrades = selectedGrades.concat(["6", "7", "8"]);
+  if (gradesSelected.high)
+    selectedGrades = selectedGrades.concat(["9", "10", "11", "12"]);
+  if (gradesSelected.ce)
+    selectedGrades = selectedGrades.concat(["CE"]);
+}
+
+function setSelectedGradesText() {
+  var selectedGradesText = "";
+  let gradesSelected = getSelectedGrades();
+  if (gradesSelected.pkg) {
+    selectedGradesText = "PK-KG";
+  }
+  if (gradesSelected.elm) {
+    if (selectedGradesText.includes("KG")) {
+      selectedGradesText = "PK-5";
+    } else {
+      selectedGradesText = "1-5";
+    }
+  }
+  if (gradesSelected.mid) {
+    if (selectedGradesText.includes("5")) {
+      selectedGradesText = selectedGradesText.substring(0, selectedGradesText.length - 1) + "8";
+    } else if (selectedGradesText.length == 0) {
+      selectedGradesText = "6-8";
+    } else {
+      selectedGradesText += ", 6-8";
+    }
+  }
+  if (gradesSelected.high) {
+    if (selectedGradesText.includes("8")) {
+      selectedGradesText = selectedGradesText.substring(0, selectedGradesText.length - 1) + "12";
+    } else if (selectedGradesText.length == 0) {
+      selectedGradesText = "9-12";
+    } else {
+      selectedGradesText += ", 9-12";
+    }
+  }
+  if (gradesSelected.ce) {
+    if (selectedGradesText.includes("12")) {
+      selectedGradesText = selectedGradesText.substring(0, selectedGradesText.length - 2) + "CE";
+    } else if (selectedGradesText.length == 0) {
+      selectedGradesText = "CE";
+    } else {
+      selectedGradesText += ", CE";
+    }
+  }
+  if (selectedGradesText === "") {
+    selectedGradesText = "None";
+  }
+  $("div#selected-grades").text(selectedGradesText);
+}
+
 // Called when either 'total student' number or grade options have been changed.
 function updateSelectedOptions(resolve, reject) {
+  setSelectedGradesList();
   $("p#loading-info").show();
   setTimeout(() => resolve(populateSchools(schools)), 0);
 }
@@ -100,11 +157,7 @@ function populateSchools(selectedSchools) {
   });
 }
 
-// create list [1, 2, 3] etc
-// check to see if low is in that list
-// if not, check to see if high is in that list
-// if not, it cannot be returned.
-
+// Test to see if a school is within the selected grades.
 function schoolInGrades(school) {
   if (selectedGrades.indexOf(school.grade_low) >= 0) {
     return true;
@@ -126,7 +179,7 @@ function* generateSchoolItems(localSchools) {
       let schoolItem = $("<li></li>")
         .append(
           $("<div></div>").append(
-            $("<p></p>").text(school.name + " - " + school.city),
+            $("<p></p>").text(school.name + " - " + school.city + ", " + school.state),
             $("<p></p>").text("Total Students: " + totalStudents)));
       schoolItem.attr("id", "school-item-"+i);
       yield schoolItem;
@@ -190,6 +243,7 @@ $(document).ready(function() {
       $("li#ce-grade-option").addClass("selected");
     }
     lastGradesSelected = JSON.stringify(getSelectedGrades());
+    setSelectedGradesText();
   }
   getSchools()
     .done((schools) => {
