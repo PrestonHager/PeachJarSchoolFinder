@@ -7,7 +7,7 @@ let minStudents = 0;
 let maxStudents = 2000;
 // Variables used in the grade option selection for optimization.
 var showDropdown = false;
-var lastGradesSelected = {"pkk": false, "15": false, "68": false, "912": false, "ce": false};
+var lastGradesSelected = '{"pkg": false, "elm": false, "mid": false, "high": false, "ce": false}';
 
 // Add a nice animation to the dropdown menu.
 $("div#grade-option-selection-current").click(function(e) {
@@ -17,12 +17,12 @@ $("div#grade-option-selection-current").click(function(e) {
     showDropdown = false;
     // Only run the update if the grades that are selected are different.
     let selectedGrades = getSelectedGrades();
-    if (lastGradesSelected != selectedGrades) {
+    if (lastGradesSelected !== JSON.stringify(selectedGrades)) {
       let updateSelectedTotalsPromise = (new Promise(updateSelectedOptions))
         .then(populateSchools)
         .catch(() => console.log(err));
+      lastGradesSelected = JSON.stringify(selectedGrades);
     }
-    lastGradesSelected = selectedGrades;
   } else {
     showDropdown = true;
   }
@@ -56,24 +56,24 @@ $("input#student-number-max").change(function(e) {
 });
 
 function getSelectedGrades() {
-  var gradesSelected = {"pkk": false, "15": false, "68": false, "912": false, "ce": false};
+  var gradesSelected = {"pkg": false, "elm": false, "mid": false, "high": false, "ce": false};
   if ($("li#pk-k-grade-option").hasClass("selected"))
-    lastGradesSelected.pkk = true;
+    gradesSelected.pkg = true;
   if ($("li#1-5-grade-option").hasClass("selected"))
-    lastGradesSelected.pkk = true;
+    gradesSelected.elm = true;
   if ($("li#6-8-grade-option").hasClass("selected"))
-    lastGradesSelected.pkk = true;
+    gradesSelected.mid = true;
   if ($("li#9-12-grade-option").hasClass("selected"))
-    lastGradesSelected.pkk = true;
+    gradesSelected.high = true;
   if ($("li#ce-grade-option").hasClass("selected"))
-    lastGradesSelected.pkk = true;
+    gradesSelected.ce = true;
   return gradesSelected
 }
 
 // Called when either 'total student' number or grade options have been changed.
 function updateSelectedOptions(resolve, reject) {
   $("p#loading-info").show();
-  resolve(schools);
+  setTimeout(resolve, 0, schools);
 }
 
 // NOTE: isn't used right now.
@@ -96,14 +96,14 @@ function populateSchools(selectedSchools) {
   $("p#loading-info").hide();
 }
 
-function* generateSchoolItems(schools) {
+function* generateSchoolItems(localSchools) {
   $("ul#schools-list").empty();
-  for (var i=0; i < schools.length; i++) {
-    let school = schools[i]; // school variable to make it easier for us.
+  for (var i=0; i < localSchools.length; i++) {
+    let school = localSchools[i]; // school variable to make it easier for us.
     // check the total number of students.
     if (school.total_students == undefined) continue;
     let totalStudents = parseInt(school.total_students.replace(/,/g, ''));
-    if (totalStudents > minStudents && totalStudents < maxStudents) {
+    if (totalStudents >= minStudents && totalStudents <= maxStudents) {
       let schoolItem = $("<li></li>")
         .append(
           $("<div></div>").append(
@@ -136,13 +136,18 @@ function fixDropdownWidth() {
 // If hardRefresh is set to true it will pull the
 // data rather than only using the browser memory.
 function getSchools(hardRefresh) {
+  var def = $.Deferred();
   schools = JSON.parse(localStorage.getItem('schools'));
   if (schools == null || hardRefresh) {
     $.getJSON("https://srv-file9.gofile.io/download/OoIzh3/better_school_data.json", function(data) {
       localStorage.setItem('schools', JSON.stringify(data));
       schools = data;
+      def.resolve(schools);
     });
+  } else {
+    def.resolve(schools);
   }
+  return def;
 }
 
 $(document).ready(function() {
@@ -166,10 +171,12 @@ $(document).ready(function() {
     if (selectedElements & 0b00001) {
       $("li#ce-grade-option").addClass("selected");
     }
-    lastGradesSelected = getSelectedGrades();
+    lastGradesSelected = JSON.stringify(getSelectedGrades());
   }
-  getSchools();
-  let listUpdatePromise = (new Promise(updateSelectedOptions))
-    .then(populateSchools)
-    .catch((err) => console.log(err));
+  getSchools()
+    .done((schools) => {
+      let listUpdatePromise = (new Promise(updateSelectedOptions))
+        .then(populateSchools)
+        .catch((err) => console.log(err));
+  });
 });
