@@ -139,6 +139,7 @@ function setSelectedGradesText() {
 // Called when either 'total student' number or grade options have been changed.
 function updateSelectedOptions(resolve, reject) {
   setSelectedGradesList();
+  $("div#no-results").hide();
   $("p#loading-info").show();
   setTimeout(() => resolve(populateSchools(schools)), 0);
 }
@@ -150,10 +151,17 @@ function populateSchools(selectedSchools) {
 
   Promise.all(iterator)
   .then(result => {
-    setTimeout(() => {$("ul#schools-list").append(result)}, 0);
+    setTimeout(() => {
+      $("ul#schools-list").append(result);
+    }, 0);
   })
   .then(() => {
-    setTimeout(() => {$("p#loading-info").hide()}, 0);
+    setTimeout(() => {
+      $("p#loading-info").hide();
+      if ($("ul#schools-list").is(":empty")) {
+        $("div#no-results").show();
+      }
+    }, 0);
   });
 }
 
