@@ -57,6 +57,20 @@
           <p class="option-text">-</p>
           <input id="student-number-max" type="number" class="option number-option" value=2000 min=1>
         </div>
+        <div class="option">
+          <div class="selected">
+            <p id="selected-states">Selected States:</p>
+            <div id="selected-states-list">
+              <p style="display: inline">None</p>
+            </div>
+          </div>
+          <div class="input-box">
+            <input type="text" id="state-input" placeholder="State">
+            <div id="suggestions">
+              <ul id="state-suggestions"></ul>
+            </div>
+          </div>
+        </div>
       </div>
       <div class="results">
         <p id="loading-info" class="information">Loading...</p>
